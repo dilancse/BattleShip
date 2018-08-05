@@ -57,16 +57,19 @@ public class WebSocketClient
 
 	public void ConnectToServer ()
 	{
-		webSocket.Connect ();
+		if (webSocket != null)
+			webSocket.Connect ();
 	}
 
 	public void CloseConnection ()
 	{
-		webSocket.Close (CloseStatusCode.Normal);
+		if (webSocket != null)
+			webSocket.Close (CloseStatusCode.Normal);
 	}
 
 	public void SendMessage (string message)
 	{
-		webSocket.Send (message);
+		if (webSocket != null)
+			webSocket.Send (message);
 	}
 }
