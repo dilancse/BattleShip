@@ -25,7 +25,7 @@ public class GameService : WebSocketBehavior
 	{
 		base.OnClose (e);
 
-		Debug.Log ("Websockt closed : " + e.Reason);
+		Debug.Log ("Session closed : " + e.Reason);
 	}
 
 	protected override void OnError (ErrorEventArgs e)
