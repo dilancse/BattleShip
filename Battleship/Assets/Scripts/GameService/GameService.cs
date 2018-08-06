@@ -9,7 +9,7 @@ public class GameService : WebSocketBehavior
 	protected override void OnOpen ()
 	{
 		base.OnOpen ();
-		Debug.Log ("Session started");
+		Debug.Log ("Session started : " + this.ID);
 	}
 
 	protected override void OnMessage (MessageEventArgs e)
@@ -34,8 +34,4 @@ public class GameService : WebSocketBehavior
 		Debug.Log ("ERROR OCCURED: " + e.Message);
 	}
 
-	public void BroadcastMessage (string message)
-	{
-		Send (message);
-	}
 }

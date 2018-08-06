@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using WebSocketSharp;
 using WebSocketSharp.Server;
+using System.Linq;
 
 public class WebSocketGameServer
 {
 	private WebSocketServer webSocketServer = null;
 	private WebSocketServiceHost serviceHost = null;
-	private GameService currentGameService = null;
 	private string currentService = null;
 
 	public WebSocketGameServer (string url, string service)
@@ -38,26 +38,47 @@ public class WebSocketGameServer
 
 		if (serviceHost != null)
 			return serviceHost;
-		else {
+		else if (!string.IsNullOrEmpty (service)) {
 			if (webSocketServer.WebSocketServices.TryGetServiceHost (service, out serviceHost))
 				return serviceHost;
 			else
 				return null;
-		}
+		} else
+			return null;
 	}
 
-	//			public GameService GetGameService(string service){
-	//				if (currentGameService != null)
-	//					return currentGameService;
-	//					else{
-	//					WebSocketServiceHost host = GetServiceHost (service);
-	//					if (host != null && host.BehaviorType == typeof(GameService))
-	//
-	//					}
-	//			}
 
-	public void SendMessage (string message)
+	public List<GameService> GetAllGameServices (string service)
 	{
-		
+		WebSocketServiceHost host = GetServiceHost (service);
+
+		if (host != null && host.BehaviorType == typeof(GameService)) {
+			IEnumerable<GameService> allServices = host.Sessions.Sessions as IEnumerable<GameService>;
+			return allServices.ToList<GameService> ();
+		} else
+			return null;					
+	}
+
+	public GameService GetGameService (string serviceId)
+	{
+		WebSocketServiceHost host = GetServiceHost (currentService);
+
+		if (host != null && !string.IsNullOrEmpty (serviceId) && host.BehaviorType == typeof(GameService)) {
+			IWebSocketSession session;
+			if (host.Sessions.TryGetSession (serviceId, out session))
+				return session as GameService;
+			else
+				return null;
+		} else
+			return null;
+	}
+
+	public void SendMessage (string serviceId, string message)
+	{
+		WebSocketServiceHost host = GetServiceHost (currentService);
+
+		if (host != null) {
+			host.Sessions.SendTo (message, serviceId);
+		}
 	}
 }
